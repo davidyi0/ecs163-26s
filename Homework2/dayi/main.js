@@ -19,9 +19,9 @@ d3.csv("data/ds_salaries.csv").then(data => {
     globalData = data;
 
 
-    sankeyChart = new SankeyChart("#top-half");
-    barChart = new BarChart("#bottom-left");
-    scatterPlot = new scatterPlot("#bottom-right");
+    sankeyChart = new SankeyChart("#bottom-left");
+    barChart = new BarChart("#top-half");
+    scatterPlot = new ScatterPlot("#bottom-right");
     updateViews();
 });
 

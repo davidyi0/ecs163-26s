@@ -35,7 +35,8 @@ class SankeyChart {
         let legendData = ["EN (Entry)", "MI (Mid)", "SE (Senior)", "EX (Executive)"];
         let legend = this.svg.append("g")
             .attr("class", "legend")
-            .attr("transform", `translate(${(this.width - 400)}, -40)`);
+            .attr("transform", `translate(${(this.width - 400)}, -40)`)
+            .attr("transform", `translate(0, ${this.margin.top - 100})`);
 
         legend.selectAll("rect")
             .data(legendData)
