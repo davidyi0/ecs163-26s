@@ -31,7 +31,7 @@ class BarChart {
             .attr("x", this.width / 2)
             .attr("y", this.height + 45)
             .style("text-anchor", "middle")
-            .text("Median Salary (USD)");
+            .text("Number of Job Postings");
 
         // chart title
         this.svg.append("text")
@@ -40,32 +40,42 @@ class BarChart {
             .attr("text-anchor", "middle")
             .style("font-size", "16px")
             .style("font-weight", "bold")
-            .text("Median Salary by Top 10 Job Titles");
+            .text("Top 10 Most Common Data Science Roles");
 
         // uses html tooltip div
         this.tooltip = d3.select("#hover-tooltip");
     }
 
     update(data) {
-        // handles 0 matching selection
-        if (data.length === 0) {
-            this.svg.selectAll(".bar").remove();
-            return;
-        }
-
-        // groups data by job title and calculate the median salary for each group
-        let nested = d3.nest()
+        let allCounts = d3.nest()
             .key(d => d.job_title)
-            .rollup(leaves => {
-                let sorted = leaves.map(d => d.salary_in_usd).sort(d3.ascending);
-                return d3.median(sorted);
-            })
-            .entries(data);
+            .rollup(v => v.length)
+            .entries(data)
+            .sort((a, b) => b.value - a.value);
 
-        // sorts descending order of median salary
+        // find top 9
+        let top9Keys = allCounts.slice(0, 9).map(d => d.key);
+
+        // bucket remaining through exclusion
+        let bucketedData = data.map(d => {
+            return {
+                ...d,
+                // if not in top 9, rename it to "Other Roles" for this view
+                display_title: top9Keys.includes(d.job_title) ? d.job_title : "Other Roles"
+            };
+        });
+
+        // puts data into bucket and counts how many
+        let nested = d3.nest()
+            .key(d => d.display_title)
+            .rollup(leaves => leaves.length) // simplified to a number
+            .entries(bucketedData);
+
+        // sort by number value
         nested.sort((a, b) => b.value - a.value);
-        // limits to top 10 job titles
-        let topData = nested.slice(0, 10);
+
+        let topData = nested;
+
 
         // update the scale domain based on the new top 10 data
         this.x.domain([0, d3.max(topData, d => d.value)]);
@@ -93,7 +103,7 @@ class BarChart {
             // mouseover event to fade in and position tooltip
             .on("mouseover", (d) => {
                 this.tooltip.transition().duration(200).style("opacity", .9);
-                this.tooltip.html(`<b>${d.key}</b><br/>Median: $${d3.format(",.0f")(d.value)}`)
+                this.tooltip.html(`<b>${d.key}</b><br/>Job postings: ${d3.format(",.0f")(d.value)}`)
                     .style("left", (d3.event.pageX + 10) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
             })
@@ -104,15 +114,17 @@ class BarChart {
             // click event to toggle filtering by job title
             .on("click", (d) => {
                 if (globalFilter.jobTitle === d.key) {
-                    globalFilter.jobTitle = null; // turn off filter if clicking the same bar
+                    globalFilter.jobTitle = null; // turn off filter
                 } else {
                     globalFilter.jobTitle = d.key; // turn on filter
                 }
+
+                // highlight the selected bar
                 this.svg.selectAll(".bar")
                     .transition().duration(200)
                     .attr("fill", barData => globalFilter.jobTitle === barData.key ? "#ff7f0e" : "#1f77b4");
 
-                updateViews("bar"); // trigger global update
+                updateViews("bar");
             })
             // merge enter and update selection
             .merge(bars)
@@ -132,3 +144,4 @@ class BarChart {
             .remove();
     }
 }
+
