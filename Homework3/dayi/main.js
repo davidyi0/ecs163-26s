@@ -13,8 +13,9 @@ function getSalaryTier(salary) {
 
 d3.csv("data/ds_salaries.csv").then(data => {
     // read in and clean the dataset
-    data.forEach(d => {
+    data.forEach((d, i) => {
         d.salary_in_usd = +d.salary_in_usd;
+        d.id = i;
     });
     globalData = data;
 
