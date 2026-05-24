@@ -29,7 +29,7 @@ class SankeyChart {
             .style("font-weight", "bold")
             .text("Career Flow: Experience \u2192 Company Size \u2192 Remote Ratio \u2192 Salary Tier");
         // tooltip
-        this.tooltip = d3.select("#tooltip");
+        this.tooltip = d3.select("#hover-tooltip");
 
         // legend 
         let legendData = ["EN (Entry)", "MI (Mid)", "SE (Senior)", "EX (Executive)"];

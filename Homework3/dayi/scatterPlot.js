@@ -6,15 +6,16 @@ class ScatterPlot {
         this.width = document.querySelector(selector).clientWidth - this.margin.left - this.margin.right;
         this.height = document.querySelector(selector).clientHeight - this.margin.top - this.margin.bottom;
 
+        // makes a container wrapping the svg
         this.svgContainer = d3.select(selector)
             .append("svg")
             .attr("width", "100%")
             .attr("height", "100%")
             .attr("viewBox", `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`)
 
+        // the actual svg area
         this.svg = this.svgContainer.append("g")
             .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
-
 
         //add invisible background to capture zoom using pointer events
         this.svg.append("rect")
@@ -22,18 +23,17 @@ class ScatterPlot {
             .attr("height", this.height)
             .attr("fill", "none")
             .style("pointer-events", "all")
-
+        // creates an area that defines rendering within the area
         this.svgContainer.append("defs").append("clipPath")
             .attr("id", "clip")
             .append("rect")
             .attr("width", this.width)
             .attr("height", this.height);
 
-
+        // uses our clippath
         this.boundaries = this.svg.append("g").attr("clip-path", "url(#clip)");
 
-
-
+        // implements pan and zoom using d3 zoom
         this.zoom = d3.zoom()
             .scaleExtent([0.5, 20])
             .on("zoom", () => {
