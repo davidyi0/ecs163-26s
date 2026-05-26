@@ -72,6 +72,8 @@ class ScatterPlot {
     }
 
     update(data) {
+        // reset zoom to default
+        this.svgContainer.call(this.zoom.transform, d3.zoomIdentity);
         // updates axis domains based on filtered data
         this.x.domain([0, d3.max(data, d => d.salary_in_usd) || 0]);
         this.y.domain(["EN", "MI", "SE", "EX"]);
@@ -105,7 +107,7 @@ class ScatterPlot {
             .transition().duration(800)
             .attr("cx", d => this.x(d.salary_in_usd))
             // adds some randomness to y positions so points don't overlap
-            .attr("cy", d => this.y(d.experience_level) + (Math.random() - 0.5) * 20)
+            .attr("cy", d => this.y(d.experience_level) + ((d.id % 7) - 3) * 4)
             .attr("r", 5)
             .attr("fill", d => this.color(d.experience_level))
             .attr("fill-opacity", 0.6)
