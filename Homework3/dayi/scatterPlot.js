@@ -47,7 +47,11 @@ class ScatterPlot {
         //scalings for axes
         this.x = d3.scaleLinear().range([0, this.width]);
         this.y = d3.scalePoint().range([this.height, 0]).padding(0.5);
-        this.color = d3.scaleOrdinal(d3.schemeCategory10); // matches sankey colorscheme
+
+        // matches saneky without reordering
+        this.color = d3.scaleOrdinal()
+            .domain(["EN", "MI", "SE", "EX"])
+            .range(d3.schemeCategory10.slice(0, 4));
 
         // constructs aexes
         this.xAxis = this.svg.append("g").attr("transform", `translate(0,${this.height})`);
@@ -59,6 +63,15 @@ class ScatterPlot {
             .attr("y", this.height + 40)
             .style("text-anchor", "middle")
             .text("Salary in USD");
+
+
+        this.svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -this.margin.left + 15)
+            .attr("x", -this.height / 2)
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Experience Level");
 
         this.svg.append("text")
             .attr("x", this.width / 2)

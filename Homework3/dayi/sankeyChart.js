@@ -18,8 +18,10 @@ class SankeyChart {
             .nodeWidth(20)
             .nodePadding(15)
             .extent([[0, 0], [this.width, this.height]]);
-        // sankey color scale categorically
-        this.color = d3.scaleOrdinal(d3.schemeCategory10);
+        // sankey color scale categorically for consistency
+        this.color = d3.scaleOrdinal()
+            .domain(["EN", "MI", "SE", "EX"])
+            .range(d3.schemeCategory10);
         // main title for sankey chart
         this.svg.append("text")
             .attr("x", this.width / 2)
@@ -208,4 +210,5 @@ class SankeyChart {
         // ensure nodes stay visually in front of the gray links
         this.svg.selectAll(".node").raise();
     }
+
 }
